@@ -9,9 +9,14 @@ function querystr_to_array(querystr: string): string[] {
     .map(l => l + ';');
 }
 
+interface Rule {
+  type: string;
+  regex?: string;
+}
+
 interface BaseQueryParams {
   include_audible?: boolean;
-  classes: Record<string, any>;
+  classes: [string[], Rule][];
   filter_classes: string[][];
 }
 
@@ -41,7 +46,7 @@ function isAndroidParams(object: any): object is AndroidQueryParams {
 //  - Categorization (if classes specified)
 //  - Filters by category (if filter_classes set)
 // Puts it's results in `events` and `not_afk` (if not_afk available for platform).
-function canonicalEvents(params: DesktopQueryParams | AndroidQueryParams): string {
+export function canonicalEvents(params: DesktopQueryParams | AndroidQueryParams): string {
   // Needs escaping for regex patterns like '\w' to work (JSON.stringify adds extra unecessary escaping)
   const classes_str = JSON.stringify(params.classes).replace('\\\\', '\\');
   const cat_filter_str = JSON.stringify(params.filter_classes);
